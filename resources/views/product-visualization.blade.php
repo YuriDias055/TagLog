@@ -10,25 +10,22 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 
-                    <!-- Filtro de Estado da Entrega -->
-                    <form method="GET" action="{{ route('product-visualization') }}" class="mb-4">
-                        <div class="flex items-center">
-                            <label for="estado_da_entrega" class="mr-2 text-gray-800 dark:text-gray-200">Filtrar por Estado da Entrega:</label>
-                            <select name="estado_da_entrega" id="estado_da_entrega" class="border border-gray-300 dark:border-gray-600 rounded p-2 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700">
-                                <option value="">Todos</option>
-                                <option value="pendente" {{ $estadoDaEntrega == 'pendente' ? 'selected' : '' }}>Pendente</option>
-                                <option value="na fila" {{ $estadoDaEntrega == 'na fila' ? 'selected' : '' }}>Na Fila</option>
-                                <option value="em andamento" {{ $estadoDaEntrega == 'em andamento' ? 'selected' : '' }}>Em Andamento</option>
-                                <option value="entregue" {{ $estadoDaEntrega == 'entregue' ? 'selected' : '' }}>Entregue</option>
-                            </select>
-                            <button type="submit" 
-                                class="ml-4 inline-flex items-center px-2 py-2 bg-gray-800 dark:bg-gray-600 text-white border-none rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 transition-colors duration-300">
-                                Filtrar
-                            </button>
-                        </div>
+                    <form method="GET" action="{{ route('product-visualization') }}">
+                        <label for="estado_da_entrega" class="mr-2 text-gray-800 dark:text-gray-200">Filtrar por Estado da Entrega:</label>
+                        <select name="estado_da_entrega" id="estado_da_entrega" class="border border-gray-300 dark:border-gray-600 rounded p-2 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700">
+                            <option value="">Todos</option>
+                            @foreach ($estadoMap as $key => $value)
+                                <option value="{{ $key }}" {{ request('estado_da_entrega') == $key ? 'selected' : '' }}>
+                                    {{ $value }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="ml-4 inline-flex items-center px-2 py-2 bg-gray-800 dark:bg-gray-600 text-white border-none rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 transition-colors duration-300">
+                            Filtrar
+                        </button>
                     </form>
 
-                    <table class="min-w-full bg-white dark:bg-gray-800">
+                    <table class="min-w-full bg-white dark:bg-gray-800 mt-4">
                         <thead>
                             <tr>
                                 <th class="py-2 px-4 border-b text-center text-gray-800 dark:text-gray-200">Código</th>
@@ -39,13 +36,20 @@
                         <tbody>
                             @foreach ($produtos as $produto)
                                 <tr>
-                                    <td class="py-2 px-4 border-b text-center text-gray-800 dark:text-gray-200">{{ $produto->codigo }}</td>
-                                    <td class="py-2 px-4 border-b text-center text-gray-800 dark:text-gray-200">{{ $produto->estado_da_entrega }}</td>
+                                    <td class="py-2 px-4 border-b text-center text-gray-800 dark:text-gray-200">{{ $produto->code }}</td>
+                                    <td class="py-2 px-4 border-b text-center text-gray-800 dark:text-gray-200">{{ $produto->state }}</td>
                                     <td class="py-2 px-4 border-b text-center">
-                                        <!-- Botão para abrir o modal com as informações do pacote -->
                                         <button 
                                             class="inline-flex items-center px-2 py-1 bg-gray-800 dark:bg-gray-600 text-white border-none rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 transition-colors duration-300"
-                                            @click="isOpen = true; produto = {{ $produto }}"
+                                            @click="isOpen = true; produto = { 
+                                                code: '{{ $produto->code }}', 
+                                                rua: '{{ $produto->endereco->rua ?? '' }}', 
+                                                bairro: '{{ $produto->endereco->bairro ?? '' }}', 
+                                                numero: '{{ $produto->endereco->numero ?? '' }}', 
+                                                cidade: '{{ $produto->endereco->cidade ?? '' }}', 
+                                                estado: '{{ $produto->endereco->estado ?? '' }}', 
+                                                state: '{{ $produto->state }}' 
+                                            }"
                                         >
                                             Visualizar
                                         </button>
@@ -55,7 +59,6 @@
                         </tbody>
                     </table>
 
-                    <!-- Links de Paginação -->
                     <div class="mt-4">
                         {{ $produtos->links() }}
                     </div>
@@ -65,12 +68,12 @@
                         x-show="isOpen"
                         x-cloak
                         @keydown.escape.window="isOpen = false"
-                        class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50"
+                        class="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50 transition-opacity duration-300"
                     >
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
                             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Detalhes do Pacote</h3>
                             <div class="mb-2 text-gray-800 dark:text-gray-200">
-                                <strong>Código:</strong> <span x-text="produto.codigo"></span>
+                                <strong>Código:</strong> <span x-text="produto.code"></span>
                             </div>
                             <div class="mb-2 text-gray-800 dark:text-gray-200">
                                 <strong>Rua:</strong> <span x-text="produto.rua"></span>
@@ -88,10 +91,9 @@
                                 <strong>Estado:</strong> <span x-text="produto.estado"></span>
                             </div>
                             <div class="mb-2 text-gray-800 dark:text-gray-200">
-                                <strong>Estado da Entrega:</strong> <span x-text="produto.estado_da_entrega"></span>
+                                <strong>Estado da Entrega:</strong> <span x-text="produto.state"></span>
                             </div>
 
-                            <!-- Botões de Ação -->
                             <div class="flex justify-end mt-4">
                                 <button 
                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded"

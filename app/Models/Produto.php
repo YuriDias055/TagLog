@@ -9,15 +9,20 @@ class Produto extends Model
 {
     use HasFactory;
 
-    protected $table = 'produto'; 
+    // Nome da tabela no banco de dados
+    protected $table = 'produto';
 
+    // Campos que podem ser preenchidos no banco de dados
     protected $fillable = [
-        'codigo',
-        'rua',
-        'bairro',
-        'numero',
-        'cidade',
-        'estado',
-        'estado_da_entrega',
+        'code',         // Código do produto
+        'description',  // Descrição do produto
+        'addressId',    // ID do endereço relacionado
+        'state',        // Estado do produto
     ];
+
+    // Relacionamento com o modelo Endereco
+    public function endereco()
+    {
+        return $this->belongsTo(Endereco::class, 'addressId', 'id');
+    }
 }

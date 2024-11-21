@@ -3,45 +3,89 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produto;
+use App\Models\Endereco;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
-{
-    // Pega o estado da entrega do request, se houver
-    $estadoDaEntrega = $request->input('estado_da_entrega');
+    // Função para exibir o formulário de cadastro de produto
+    public function create()
+    {
+        // Recuperar todos os endereços
+        $enderecos = Endereco::all();
 
-    // Filtra os produtos com base no estado da entrega, se selecionado
-    $produtos = Produto::when($estadoDaEntrega, function ($query) use ($estadoDaEntrega) {
-        return $query->where('estado_da_entrega', $estadoDaEntrega);
-    })->paginate(10); // Pega 10 produtos por página
+        // Retornar a view com os endereços
+        return view('product-registration', compact('enderecos'));
+    }
 
-    return view('product-visualization', compact('produtos', 'estadoDaEntrega'));
-}
-
-
-    public function store(Request $request){
-        $request->validate([
-            'codigo' => 'required|numeric',
-            'rua' => 'required|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'numero' => 'required|numeric',
-            'cidade' => 'required|string|max:255',
-            'estado' => 'required|string|max:255',
-            'estado_da_entrega' => 'required|string|max:255',
+    // Função para armazenar o produto
+    public function store(Request $request)
+    {
+        // Validação
+        $validated = $request->validate([
+            'code' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'addressId' => 'required|exists:enderecos,id', // Validação para garantir que o endereço existe
+            'state' => 'required|string|max:1', // Estado é obrigatório e deve ter um caractere
         ]);
 
+        // Inserção no banco
         Produto::create([
-            'codigo' => $request->codigo,
-            'rua' => $request->rua,
-            'bairro' => $request->bairro,
-            'numero' => $request->numero,
-            'cidade' => $request->cidade,
-            'estado' => $request->estado,
-            'estado_da_entrega' => $request->estado_da_entrega,
+            'code' => $validated['code'],
+            'description' => $validated['description'],
+            'addressId' => $validated['addressId'],
+            'state' => $validated['state'], // Estado é "P" por padrão
         ]);
 
-        return redirect()->route('product-registration')->with('success', 'Pacote registrado com sucesso!');
+        // Redirecionamento com mensagem de sucesso
+        return redirect()->route('product-registration')->with('success', 'Produto cadastrado com sucesso!');
+    }
+
+    // Função para exibir a visualização de produtos com filtro
+    public function visualizar(Request $request)
+    {
+        // Mapear os estados da entrega para os códigos e nomes
+        $estadoMap = [
+            'P' => 'Pendente',
+            'NF' => 'Na fila',
+            'EA' => 'Em andamento',
+            'E' => 'Entregue',
+        ];
+        
+        // Obter o filtro do estado da entrega a partir da requisição
+        $estadoFiltro = $request->query('estado_da_entrega');
+        
+        // Query base para produtos, com o relacionamento de endereço
+        $query = Produto::with('endereco'); // Carrega o endereço associado ao produto
+        
+        // Filtrar pelo estado da entrega, se o filtro foi fornecido e é válido
+        if (!empty($estadoFiltro) && in_array($estadoFiltro, array_keys($estadoMap))) {
+            $query->where('state', $estadoFiltro);
+        }
+        
+        // Obter os produtos com paginação
+        $produtos = $query->paginate(10);
+        
+        // Substituir as abreviações pelos nomes completos
+        foreach ($produtos as $produto) {
+            $produto->state = $estadoMap[$produto->state] ?? $produto->state;
+        }
+        
+        // Retornar a view com os produtos, estados e endereços
+        return view('product-visualization', [
+            'produtos' => $produtos,
+            'estadoDaEntrega' => $estadoFiltro,
+            'estadoMap' => $estadoMap, // Para usar no dropdown
+        ]);
+    }
+
+    // Função para retornar um produto específico junto com seu endereço em formato JSON
+    public function getProduto($id)
+    {
+        // Carregar o produto junto com o endereço
+        $produto = Produto::with('endereco')->findOrFail($id);
+
+        // Retornar os dados como JSON
+        return response()->json($produto);
     }
 }
