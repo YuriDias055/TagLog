@@ -28,7 +28,7 @@
             <select name="addressId" id="endereco" class="block mt-1 w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700">
                 @foreach($enderecos as $endereco)
                     <option value="{{ $endereco->id }}" {{ old('addressId') == $endereco->id ? 'selected' : '' }}>
-                        {{ $endereco->street }}, {{ $endereco->district }} - {{ $endereco->city }}
+                        {{ $endereco->street }}, {{ $endereco->district }} - {{$endereco -> num}} - {{ $endereco->city }}
                     </option>
                 @endforeach
             </select>
