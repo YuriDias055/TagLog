@@ -43,11 +43,11 @@
                                             class="inline-flex items-center px-2 py-1 bg-gray-800 dark:bg-gray-600 text-white border-none rounded-md hover:bg-gray-600 dark:hover:bg-gray-500 transition-colors duration-300"
                                             @click="isOpen = true; produto = { 
                                                 code: '{{ $produto->code }}', 
-                                                rua: '{{ $produto->endereco->rua ?? '' }}', 
-                                                bairro: '{{ $produto->endereco->bairro ?? '' }}', 
-                                                numero: '{{ $produto->endereco->numero ?? '' }}', 
-                                                cidade: '{{ $produto->endereco->cidade ?? '' }}', 
-                                                estado: '{{ $produto->endereco->estado ?? '' }}', 
+                                                rua: '{{ $produto->endereco->street ?? '' }}', 
+                                                bairro: '{{ $produto->endereco->district ?? '' }}', 
+                                                numero: '{{ $produto->endereco->num ?? '' }}', 
+                                                cidade: '{{ $produto->endereco->city ?? '' }}', 
+                                                estado: '{{ $produto->endereco->state ?? '' }}', 
                                                 state: '{{ $produto->state }}' 
                                             }"
                                         >
