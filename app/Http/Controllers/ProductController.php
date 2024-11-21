@@ -47,8 +47,8 @@ class ProductController extends Controller
         // Mapear os estados da entrega para os códigos e nomes
         $estadoMap = [
             'P' => 'Pendente',
-            'NF' => 'Na fila',
-            'EA' => 'Em andamento',
+            'F' => 'Na fila',
+            'A' => 'Em andamento',
             'E' => 'Entregue',
         ];
         
