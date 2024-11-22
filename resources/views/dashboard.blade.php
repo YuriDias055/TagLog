@@ -10,19 +10,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Card 1 -->
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Quantidade de Pacotes</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Quantidade Total de Pacotes</h4>
                 <p class="text-2xl text-gray-600 dark:text-gray-400">1,234</p>
             </div>
 
             <!-- Card 2 -->
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Total em Vendas</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Quantidade Total de Pacotes na Fila</h4>
                 <p class="text-2xl text-gray-600 dark:text-gray-400">$12,345</p>
             </div>
 
             <!-- Card 3 -->
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Pacotes Entregues</h4>
+                <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Quantidade Total de Pacotes Entregues</h4>
                 <p class="text-2xl text-gray-600 dark:text-gray-400">87</p>
             </div>
         </div>
@@ -34,8 +34,6 @@
             <canvas id="salesChart" class="w-48 h-48"></canvas> 
         </div>
     </div>
-
-
 
     <!-- Script para Gráfico -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -73,7 +71,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(tooltipItem) {
-                                    return tooltipItem.label + ': $' + tooltipItem.raw; // Formatação do tooltip
+                                    return tooltipItem.label + ': $' + tooltipItem.raw; 
                                 }
                             }
                         }
