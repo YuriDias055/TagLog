@@ -4,14 +4,18 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EnderecoController;
+use App\Http\Controllers\DashboardController;
+
 
 Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+
 
 Route::get('/product-registration', [ProductController::class, 'create'])
     ->middleware(['auth', 'verified'])
@@ -26,6 +30,8 @@ Route::get('/produto/{id}', [ProductController::class, 'getProduto']);
 
 Route::post('/enderecos', [EnderecoController::class, 'store'])->name('enderecos.store');
 Route::post('/produtos', [ProductController::class, 'store'])->name('produtos.store');
+
+Route::get('/painel', [DashboardController::class, 'index'])->name('painel');
 
 
 Route::middleware('auth')->group(function () {
